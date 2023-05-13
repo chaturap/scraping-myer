@@ -20,9 +20,9 @@ result_paging = []
 
 
 def get_data(url: str):
-    lastpage=0
-    page=1
-    while page < lastpage+1:
+    lastpage: int= 1
+    page: int= 1
+    while page < int(lastpage)+1:
         url=f"https://www.myer.com.au/c/men/mens-clothing/casual-shirts?pageNumber={page}"
         res = requests.get(url, params=params, headers=headers)
         if res.status_code == 200:
@@ -32,17 +32,16 @@ def get_data(url: str):
             pagings = pagings.findChildren('li')
             j = 0
             for paging in pagings:
-                #print("j,paging",j,paging)
-                if j == 7 :
-                    lastpage = paging.text
-
-                    print("lastpage",lastpage)
-                j= j + 1
+                 print("j,paging",j,paging)
+                 if j == 7:
+                     lastpage = paging.text.strip()
+                     print("lastpage:",lastpage)
+                 j= j + 1
             #lastpage = 2
             contents = soup.find_all('li', {'data-automation': 'product-grid-item'})
 
             try:
-                os.mkdir('json_result')
+                os.mkdir('file_result')
             except FileExistsError:
                 pass
 
@@ -83,7 +82,7 @@ def get_data(url: str):
                     json.dump(result, json_data)
                 print(f'Json Created page !!')
             jumlahdata = len(result)
-            print(f"Item per page : {jumlahdata}")
+            print(f"Total Item procesed : {jumlahdata}")
 
             # create csv file
             df = pd.DataFrame(result)
@@ -95,6 +94,7 @@ def get_data(url: str):
         else:
             print(f"Not Ok , status code is : {res.status_code}")
         page = page + 1
+        print(f"page {page} from {lastpage}")
 
 if __name__ == '__main__':
     get_data(url)
