@@ -86,7 +86,7 @@ def get_data(url: str):
                 try:
                     stockIndicator = content.find('div', attrs={'data-bv-show': 'inline_rating'})['data-bv-ready']
                 except:
-                    stockIndicator = ''
+                    stockIndicator = ' '
 
 
                 #linkUrl = 'https://www.myer.com.au/p/maddox-sorrento-long-sleeve-sherpa-lined-check-overshirt-in-navy'
