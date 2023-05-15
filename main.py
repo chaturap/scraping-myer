@@ -18,6 +18,7 @@ params = {
 
 result = []
 result_paging = []
+result_detail = []
 jumlahdata: int
 
 
@@ -58,12 +59,14 @@ def get_data(url: str):
     # item per page 48
     # lastpage 51
 
-    while page +49 < int(lastpage)+1:
+    while page < int(lastpage)+1:
         url=f"https://www.myer.com.au/c/men/mens-clothing/casual-shirts?pageNumber={page}"
         res = requests.get(url, params=params, headers=headers)
         if res.status_code == 200:
+            #contents = soup.find_all('html', {'lang': 'en'})
             contents = soup.find_all('li', {'data-automation': 'product-grid-item'})
-
+            #contents = soup.find_all('div', {'data-automation': 'product'})
+            #print(contents)
             try:
                 os.mkdir('file_result')
             except FileExistsError:
@@ -73,6 +76,7 @@ def get_data(url: str):
             for content in contents:
                 #  a.Necessary data: product’s name, id, brand, seoToken, variantData’s ids, stockIndicator, url
                 #  b.Nice to have dataSize guide id, size guide value
+                semua = content
                 id = content['id']
                 productName = content.find('span', attrs={'data-automation': 'product-name'}).text
                 brand = content.find('span', attrs={'data-automation': 'product-brand'}).text
@@ -80,9 +84,9 @@ def get_data(url: str):
                 linkUrl = url + content.find('a')['href']
 
                 try:
-                    variantDatasids = content.find('div', attrs={'data-bv-show': 'inline_rating'})['data-bv-product-id']
+                    variantDatasids = content.find('div', attrs={'class': 'bv-off-screen'}).text
                 except:
-                    variantDatasids
+                    variantDatasids = ''
                 try:
                     stockIndicator = content.find('div', attrs={'data-bv-show': 'inline_rating'})['data-bv-ready']
                 except:
@@ -111,9 +115,10 @@ def get_data(url: str):
                 # print(f"productName: {productName}")
                 # print(f"brand: {brand}")
                 # print(f"price: {price}")
-                print(f"variantDatasids: {variantDatasids}")
+                # print(f"variantDatasids: {variantDatasids}")
                 # print(f"linkUrl: {linkUrl}")
                 # #print(f"color: {color}")
+                # print(f"semua: {semua}")
 
                 data_dict = {
                     'id': id,
@@ -154,6 +159,7 @@ def get_data(url: str):
         else:
             print(f"Not Ok , status code is : {res.status_code}")
     print("File json csv and xlsx created success")
+
 
 if __name__ == '__main__':
     get_data(url)
