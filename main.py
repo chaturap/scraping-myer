@@ -101,13 +101,13 @@ def get_data(url: str):
                 #print(f"status: res_detail.status_code{res_detail.status_code}")
 
                 soup_detail = BeautifulSoup(res_detail.text, 'html.parser')
-                content_details = soup_detail.findAll('div', attrs={'id': 'slide-panel-hidden'})
+                content_details = soup_detail.findAll('div', attrs={'id': 'add-to-bag'})
                 #print(f"content_details{content_details}")
 
                 for content_detail in content_details:
                     color = content_detail.find('span', attrs={'data-automation': 'pdp-colour-display-value'}).text
-                    SizeGuideId = content_detail.find('h2').text
-                    sizeGuideValue = content_detail.find('table', attrs={'class': 'sizeGuideTable'}).text
+                    #SizeGuideId = content_detail.find('h2').text
+                    #sizeGuideValue = content_detail.find('table', attrs={'class': 'sizeGuideTable'}).text
                     #print(f"color:{color}")
                     #print(f"SizeGuideId:{SizeGuideId}")
                     #print(f"sizeGuideValue:{sizeGuideValue}")
@@ -119,7 +119,7 @@ def get_data(url: str):
                     # print(f"variantDatasids: {variantDatasids}")
                     # print(f"SizeGuideId: {SizeGuideId}")
                     # print(f"linkUrl: {linkUrl}")
-                    # #print(f"color: {color}")
+                    print(f"color: {color}")
                     # print(f"semua: {semua}")
                     # print(f"seo token : {seotoken}")
 
