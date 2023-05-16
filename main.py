@@ -64,6 +64,7 @@ def get_data(url: str):
         res = requests.get(url, params=params, headers=headers)
         if res.status_code == 200:
             #contents = soup.find_all('html', {'lang': 'en'})
+            seotoken = soup.find('meta', {'name':'google-site-verification'})['content']
             contents = soup.find_all('li', {'data-automation': 'product-grid-item'})
             #contents = soup.find_all('div', {'data-automation': 'product'})
             #print(contents)
@@ -84,7 +85,7 @@ def get_data(url: str):
                 linkUrl = url + content.find('a')['href']
 
                 try:
-                    variantDatasids = content.find('div', attrs={'class': 'bv-off-screen'}).text
+                    variantDatasids = soup.find('div', attrs={'data-bv-show': 'inline_rating'})['data-bv-product-id']
                 except:
                     variantDatasids = ''
                 try:
@@ -100,60 +101,62 @@ def get_data(url: str):
                 #print(f"status: res_detail.status_code{res_detail.status_code}")
 
                 soup_detail = BeautifulSoup(res_detail.text, 'html.parser')
-                content_details = soup_detail.findAll('div', attrs={'class': 'container css-1n7ul0p'})
+                content_details = soup_detail.findAll('div', attrs={'id': 'slide-panel-hidden'})
                 #print(f"content_details{content_details}")
 
                 for content_detail in content_details:
                     color = content_detail.find('span', attrs={'data-automation': 'pdp-colour-display-value'}).text
-                    SizeGuideId = content_detail.find('h3', attrs={'class': 'sgTitle'}).text
+                    SizeGuideId = content_detail.find('h2').text
                     sizeGuideValue = content_detail.find('table', attrs={'class': 'sizeGuideTable'}).text
                     #print(f"color:{color}")
                     #print(f"SizeGuideId:{SizeGuideId}")
                     #print(f"sizeGuideValue:{sizeGuideValue}")
 
-                # print(f"id: {id}")
-                # print(f"productName: {productName}")
-                # print(f"brand: {brand}")
-                # print(f"price: {price}")
-                # print(f"variantDatasids: {variantDatasids}")
-                # print(f"linkUrl: {linkUrl}")
-                # #print(f"color: {color}")
-                # print(f"semua: {semua}")
+                    # print(f"id: {id}")
+                    # print(f"productName: {productName}")
+                    # print(f"brand: {brand}")
+                    # print(f"price: {price}")
+                    # print(f"variantDatasids: {variantDatasids}")
+                    # print(f"SizeGuideId: {SizeGuideId}")
+                    # print(f"linkUrl: {linkUrl}")
+                    # #print(f"color: {color}")
+                    # print(f"semua: {semua}")
+                    # print(f"seo token : {seotoken}")
 
-                data_dict = {
-                    'id': id,
-                    'name': productName,
-                    'brand': brand,
-                    'salesprices': price,
-                    #'variantDatasids': variantDatasids,
-                    'stockIndicator': stockIndicator,
-                    'linkUrl': linkUrl,
-                    #'SeoToken': meta_tag
-                    #'color': color,
-                    #'SizeGuideId':SizeGuideId
-                    #'sizeGuideValue':sizeGuideValue
-                }
+                    data_dict = {
+                        'id': id,
+                        'name': productName,
+                        'brand': brand,
+                        'salesprices': price,
+                        #'variantDatasids': variantDatasids,
+                        'stockIndicator': stockIndicator,
+                        'linkUrl': linkUrl,
+                        'SeoToken': seotoken,
+                        #'color': color,
+                        #'SizeGuideId':SizeGuideId
+                        #'sizeGuideValue':sizeGuideValue
+                    }
 
-                result.append(data_dict)
-            # print(f"result : {result}")
+                    result.append(data_dict)
+                    # print(f"result : {result}")
 
 
-                try:
-                    os.mkdir('file_result')
-                except FileExistsError:
-                    pass
-                with open('file_result/final_data.json', 'w+') as json_data:
-                    json.dump(result, json_data)
-                #print(f'Json Created page !!')
-                jumlahdata = len(result)
-                #print(f"Total Item procesed : {jumlahdata}")
+                    try:
+                        os.mkdir('file_result')
+                    except FileExistsError:
+                        pass
+                    with open('file_result/final_data.json', 'w+') as json_data:
+                        json.dump(result, json_data)
+                    #print(f'Json Created page !!')
+                    jumlahdata = len(result)
+                    #print(f"Total Item procesed : {jumlahdata}")
 
-                # create csv file
-                df = pd.DataFrame(result)
-                df.to_csv('file_result/data.csv', index=False)
-                df.to_excel('file_result/data.xlsx', index=False)
-                # data created
-            print(f"page {page} from {lastpage} Total Item procesed : {jumlahdata}")
+                    # create csv file
+                    df = pd.DataFrame(result)
+                    df.to_csv('file_result/data.csv', index=False)
+                    df.to_excel('file_result/data.xlsx', index=False)
+                    # data created
+                    print(f"page {page} from {lastpage} Total Item procesed : {jumlahdata}")
             page = page + 1
 
         else:
